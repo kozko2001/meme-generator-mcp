@@ -8,8 +8,8 @@ This MCP server lets Claude (or any MCP client) generate memes by choosing the r
 
 ## Features
 
-- **4 Classic Templates**: Drake, Distracted Boyfriend, Change My Mind, Pigeon
-- **Smart Template Selection**: Detailed descriptions help Claude pick the right template for the humor
+- **200+ Meme Templates**: All templates from memegen.link
+- **Smart Template Selection**: Claude picks the best template for your humor
 - **URL-based Generation**: Uses memegen.link API (no authentication needed)
 - **Type-safe**: Full TypeScript implementation with validation
 
@@ -118,12 +118,24 @@ And get back a meme image URL.
 
 ## Available Templates
 
+This MCP server includes **all 207 templates** from memegen.link! Here are some popular ones:
+
 | Template | ID | Use Case |
 |----------|-----|----------|
 | Drake Hotline Bling | `drake` | Rejecting one option for another |
 | Distracted Boyfriend | `db` | Being tempted by something new |
 | Change My Mind | `cmm` | Hot takes and controversial opinions |
 | Is This a Pigeon? | `pigeon` | Misidentifying something obvious |
+| X, X Everywhere | `buzz` | Something being everywhere |
+| Futurama Fry | `fry` | Being suspicious or unsure |
+| Success Kid | `success` | Celebrating small victories |
+| Doge | `doge` | Much wow, such meme |
+| This is Fine | `fine` | Everything is on fire but it's fine |
+| Woman Yelling at Cat | `woman-cat` | Two opposing viewpoints |
+| Spider-Man Pointing | `spiderman` | Two identical things |
+| Stonks | `stonks` | Financial decisions |
+
+**Browse all templates:** https://memegen.link/templates/
 
 ## Deployment Options
 
@@ -273,7 +285,7 @@ This is the "Walking Skeleton" release. Basic functionality works end-to-end.
 - ✅ MCP server with stdio transport
 - ✅ MCP server with HTTP/SSE transport (for web access)
 - ✅ `generate_meme` tool
-- ✅ 4 hardcoded templates
+- ✅ All 207 templates from memegen.link
 - ✅ URL generation and encoding
 - ✅ Tests for URL encoding
 - ✅ Type-safe implementation
@@ -281,9 +293,9 @@ This is the "Walking Skeleton" release. Basic functionality works end-to-end.
 - ✅ CORS support for web clients
 
 **Future Releases:**
-- Expand to 15-20 templates
 - Accept URLs and auto-extract content
-- User template selection preferences
+- Multi-panel meme support
+- Custom image uploads
 - Self-hosted memegen instance support
 
 ## License

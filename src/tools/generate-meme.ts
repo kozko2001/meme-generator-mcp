@@ -6,7 +6,7 @@ import { getTemplateIds, isValidTemplate } from '../templates/catalog.js';
  * Input schema for generate_meme tool
  */
 export const GenerateMemeArgsSchema = z.object({
-  template: z.enum(['drake', 'db', 'cmm', 'pigeon'] as const),
+  template: z.enum(getTemplateIds() as [string, ...string[]]),
   top_text: z.string(),
   bottom_text: z.string(),
 });
@@ -18,19 +18,22 @@ export type GenerateMemeArgs = z.infer<typeof GenerateMemeArgsSchema>;
  */
 export const generateMemeTool = {
   name: 'generate_meme',
-  description: `Generate a meme image using memegen.link. Choose the template that best matches the humor:
+  description: `Generate a meme image using memegen.link. 200+ templates available! Choose the template that best matches your humor. Popular templates include:
 
-  • drake: Rejecting one thing (top) in favor of another (bottom). Use when comparing two options where one is clearly preferred.
-    Example: Top="Manual deployments" Bottom="CI/CD pipeline"
+  • drake: Rejecting one thing in favor of another
+  • db (Distracted Boyfriend): Being tempted by something new
+  • cmm (Change My Mind): Stating controversial opinions
+  • pigeon: Misidentifying something obvious
+  • buzz (X, X Everywhere): Something being everywhere
+  • fry (Futurama Fry): Being suspicious or unsure
+  • success (Success Kid): Celebrating small victories
+  • doge: Much wow, such meme
+  • fine (This is Fine): Everything is on fire but it's fine
+  • stonks: Financial decisions (good or bad)
+  • woman-cat: Two opposing viewpoints arguing
+  • spiderman: Two identical things pointing at each other
 
-  • db (Distracted Boyfriend): Being tempted/distracted by something new while ignoring current thing.
-    Example: Top="Current stable version" Bottom="Bleeding edge beta"
-
-  • cmm (Change My Mind): Stating a hot take or controversial opinion. Bottom text usually empty or "change my mind".
-    Example: Top="Vim is better than Emacs" Bottom=""
-
-  • pigeon: Completely misidentifying something obvious. Character asks "Is this X?" about something that clearly isn't.
-    Example: Top="A compiler warning" Bottom="Is this optional?"`,
+  Browse all templates at https://memegen.link/templates/`,
   inputSchema: {
     type: 'object' as const,
     properties: {
