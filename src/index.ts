@@ -104,6 +104,9 @@ async function startStdio() {
  * Start the server in HTTP/SSE mode (for web clients)
  */
 async function startHttp(port: number) {
+  // Store active server instances per session
+  const sessions = new Map<string, { server: any; transport: any }>();
+
   const httpServer = http.createServer(async (req, res) => {
     const url = new URL(req.url || '/', `http://${req.headers.host}`);
 
@@ -115,7 +118,8 @@ async function startHttp(port: number) {
       res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Session-ID');
+    res.setHeader('Access-Control-Expose-Headers', 'X-Session-ID');
 
     // Handle preflight
     if (req.method === 'OPTIONS') {
@@ -132,14 +136,64 @@ async function startHttp(port: number) {
     }
 
     // SSE endpoint
-    if (url.pathname === '/sse') {
+    if (url.pathname === '/sse' && req.method === 'GET') {
+      // Generate session ID
+      const sessionId = Math.random().toString(36).substring(7);
+
+      console.log(`New SSE connection: ${sessionId}`);
+
+      // Create new server instance for this session
       const server = createServer();
-      const transport = new SSEServerTransport(url.pathname, res);
+      const transport = new SSEServerTransport(`/message/${sessionId}`, res);
+
+      // Store session
+      sessions.set(sessionId, { server, transport });
+
+      // Set session ID header
+      res.setHeader('X-Session-ID', sessionId);
+
+      // Connect server to transport
       await server.connect(transport);
 
+      // Cleanup on close
       req.on('close', async () => {
+        console.log(`SSE connection closed: ${sessionId}`);
         await server.close();
+        sessions.delete(sessionId);
       });
+
+      return;
+    }
+
+    // Message endpoint for SSE (POST requests from client)
+    if (url.pathname.startsWith('/message/') && req.method === 'POST') {
+      const sessionId = url.pathname.split('/')[2];
+      const session = sessions.get(sessionId);
+
+      if (!session) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Session not found' }));
+        return;
+      }
+
+      // Read POST body
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString();
+      });
+
+      req.on('end', async () => {
+        try {
+          // Forward the message to the transport
+          console.log(`Received message for session ${sessionId}:`, body);
+          await session.transport.handlePostMessage(req, res);
+        } catch (error) {
+          console.error('Error handling message:', error);
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Internal server error' }));
+        }
+      });
+
       return;
     }
 
