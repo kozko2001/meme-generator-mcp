@@ -6,7 +6,7 @@ import { getTemplateIds, isValidTemplate } from '../templates/catalog.js';
  * Input schema for generate_meme tool
  */
 export const GenerateMemeArgsSchema = z.object({
-  template: z.enum(['drake', 'db', 'cmm', 'pigeon', 'pikachu'] as const),
+  template: z.enum(['drake', 'db', 'cmm', 'pigeon'] as const),
   top_text: z.string(),
   bottom_text: z.string(),
 });
@@ -30,10 +30,7 @@ export const generateMemeTool = {
     Example: Top="Vim is better than Emacs" Bottom=""
 
   • pigeon: Completely misidentifying something obvious. Character asks "Is this X?" about something that clearly isn't.
-    Example: Top="A compiler warning" Bottom="Is this optional?"
-
-  • pikachu (Surprised Pikachu): Obvious consequence happens, someone acts shocked. For predictable outcomes.
-    Example: Top="Skip writing tests" Bottom="Production bugs appearing"`,
+    Example: Top="A compiler warning" Bottom="Is this optional?"`,
   inputSchema: {
     type: 'object' as const,
     properties: {

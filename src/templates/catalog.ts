@@ -41,13 +41,6 @@ export const templates: Record<string, MemeTemplate> = {
     example: 'Top: "A bug" / Bottom: "Is this a feature?"',
     slots: 2,
   },
-  pikachu: {
-    id: 'pikachu',
-    name: 'Surprised Pikachu',
-    description: 'When an obvious consequence happens and someone acts shocked. Expressing surprise at a predictable outcome.',
-    example: 'Top: "Deploying to production on Friday" / Bottom: "Things breaking over the weekend"',
-    slots: 2,
-  },
 };
 
 /**

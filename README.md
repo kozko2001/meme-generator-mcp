@@ -8,7 +8,7 @@ This MCP server lets Claude (or any MCP client) generate memes by choosing the r
 
 ## Features
 
-- **5 Classic Templates**: Drake, Distracted Boyfriend, Change My Mind, Pigeon, Surprised Pikachu
+- **4 Classic Templates**: Drake, Distracted Boyfriend, Change My Mind, Pigeon
 - **Smart Template Selection**: Detailed descriptions help Claude pick the right template for the humor
 - **URL-based Generation**: Uses memegen.link API (no authentication needed)
 - **Type-safe**: Full TypeScript implementation with validation
@@ -124,7 +124,6 @@ And get back a meme image URL.
 | Distracted Boyfriend | `db` | Being tempted by something new |
 | Change My Mind | `cmm` | Hot takes and controversial opinions |
 | Is This a Pigeon? | `pigeon` | Misidentifying something obvious |
-| Surprised Pikachu | `pikachu` | Shocked by predictable consequences |
 
 ## Deployment Options
 
@@ -274,7 +273,7 @@ This is the "Walking Skeleton" release. Basic functionality works end-to-end.
 - ✅ MCP server with stdio transport
 - ✅ MCP server with HTTP/SSE transport (for web access)
 - ✅ `generate_meme` tool
-- ✅ 5 hardcoded templates
+- ✅ 4 hardcoded templates
 - ✅ URL generation and encoding
 - ✅ Tests for URL encoding
 - ✅ Type-safe implementation
