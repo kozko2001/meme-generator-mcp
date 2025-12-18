@@ -1,0 +1,91 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: meme-generator-mcp-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - hosts:
+      - meme-mcp.allocsoc.net
+      secretName: meme-mcp-allocsoc-net-tls
+  rules:
+    - host: meme-mcp.allocsoc.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: meme-generator-mcp-service
+                port:
+                  number: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meme-generator-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meme-generator-mcp
+  template:
+    metadata:
+      labels:
+        app: meme-generator-mcp
+    spec:
+      containers:
+      - name: meme-generator-mcp
+        image: harbor.allocsoc.net/meme-generator-mcp/meme-generator-mcp:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: MCP_TRANSPORT
+          value: "http"
+        - name: PORT
+          value: "3000"
+        - name: NODE_ENV
+          value: "production"
+        - name: ALLOWED_ORIGINS
+          value: "https://claude.ai,https://console.anthropic.com"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: meme-generator-mcp-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: meme-generator-mcp

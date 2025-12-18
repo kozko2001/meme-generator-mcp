@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- namespace.yaml
+- meme-generator-mcp.yaml
+
+# Namespace for all resources
+namespace: meme-generator-mcp
+
+# Common labels
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/name: meme-generator-mcp
+    app.kubernetes.io/version: 1.0.0

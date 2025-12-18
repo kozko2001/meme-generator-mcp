@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: meme-generator-mcp
+  labels:
+    app.kubernetes.io/name: meme-generator-mcp
+    app.kubernetes.io/managed-by: flux
