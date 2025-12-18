@@ -17,8 +17,9 @@ This MCP server lets Claude (or any MCP client) generate memes by choosing the r
 
 ### Prerequisites
 
-- Node.js 20+ (or use the included Nix flake)
+- Node.js 24+ (or use the included Nix flake)
 - pnpm (or npm)
+- Docker (optional, for containerized deployment)
 
 ### Using Nix
 
@@ -125,6 +126,85 @@ And get back a meme image URL.
 | Is This a Pigeon? | `pigeon` | Misidentifying something obvious |
 | Surprised Pikachu | `pikachu` | Shocked by predictable consequences |
 
+## Deployment Options
+
+### Option 1: Docker (Recommended for Web Access)
+
+This MCP server supports both **stdio mode** (for Claude Desktop/Code) and **HTTP/SSE mode** (for Claude web).
+
+#### Build and Run with Docker
+
+```bash
+# Build the Docker image
+docker build -t meme-generator-mcp .
+
+# Run in HTTP mode (for web access)
+docker run -p 3000:3000 \
+  -e MCP_TRANSPORT=http \
+  -e PORT=3000 \
+  -e ALLOWED_ORIGINS=* \
+  meme-generator-mcp
+
+# Or use docker-compose
+docker-compose up -d
+```
+
+#### Deploy to Cloud
+
+**Railway:**
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login and deploy
+railway login
+railway init
+railway up
+```
+
+**Fly.io:**
+```bash
+# Install flyctl
+curl -L https://fly.io/install.sh | sh
+
+# Deploy
+fly launch
+fly deploy
+```
+
+**Render:**
+1. Connect your GitHub repo
+2. Select "Docker" as environment
+3. Deploy
+
+Once deployed, you'll get a public URL like `https://your-app.railway.app`. Use the SSE endpoint: `https://your-app.railway.app/sse`
+
+### Option 2: Local HTTP Mode
+
+```bash
+# Build
+pnpm build
+
+# Run in HTTP mode
+pnpm dev:http
+
+# Server will be available at http://localhost:3000/sse
+```
+
+### Using with Claude Web
+
+Once your server is deployed publicly:
+
+1. Go to Claude web interface
+2. Add a remote MCP server
+3. Use your SSE endpoint URL: `https://your-domain.com/sse`
+4. Configure CORS by setting `ALLOWED_ORIGINS` to include Claude's domain
+
+**Note:** For production, set `ALLOWED_ORIGINS` to specific domains:
+```bash
+ALLOWED_ORIGINS=https://claude.ai,https://console.anthropic.com
+```
+
 ## Development
 
 ```bash
@@ -140,8 +220,11 @@ pnpm build
 # Watch mode for build
 pnpm watch
 
-# Run locally
+# Run locally (stdio mode)
 pnpm dev
+
+# Run locally (HTTP mode)
+pnpm dev:http
 ```
 
 ## Project Structure
@@ -189,11 +272,14 @@ This is the "Walking Skeleton" release. Basic functionality works end-to-end.
 
 **Completed:**
 - ✅ MCP server with stdio transport
+- ✅ MCP server with HTTP/SSE transport (for web access)
 - ✅ `generate_meme` tool
 - ✅ 5 hardcoded templates
 - ✅ URL generation and encoding
 - ✅ Tests for URL encoding
 - ✅ Type-safe implementation
+- ✅ Docker containerization
+- ✅ CORS support for web clients
 
 **Future Releases:**
 - Expand to 15-20 templates

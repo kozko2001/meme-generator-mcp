@@ -11,9 +11,13 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "dev": "tsc && node dist/index.js",
+    "dev:http": "MCP_TRANSPORT=http PORT=3000 tsc && node dist/index.js",
     "inspector": "tsc && npx @modelcontextprotocol/inspector node dist/index.js",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "docker:build": "docker build -t meme-generator-mcp .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env meme-generator-mcp",
+    "docker:dev": "docker run -p 3000:3000 -e MCP_TRANSPORT=http -e PORT=3000 meme-generator-mcp"
   },
   "keywords": [
     "mcp",
