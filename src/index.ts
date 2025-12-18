@@ -176,23 +176,18 @@ async function startHttp(port: number) {
         return;
       }
 
-      // Read POST body
-      let body = '';
-      req.on('data', chunk => {
-        body += chunk.toString();
-      });
-
-      req.on('end', async () => {
-        try {
-          // Forward the message to the transport
-          console.log(`Received message for session ${sessionId}:`, body);
-          await session.transport.handlePostMessage(req, res);
-        } catch (error) {
-          console.error('Error handling message:', error);
+      // The SSEServerTransport expects to read the body itself
+      // So we just pass the raw request and response
+      try {
+        console.log(`Forwarding message to session ${sessionId}`);
+        await session.transport.handlePostMessage(req, res);
+      } catch (error) {
+        console.error('Error handling message:', error);
+        if (!res.headersSent) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Internal server error' }));
         }
-      });
+      }
 
       return;
     }
