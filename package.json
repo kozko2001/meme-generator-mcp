@@ -1,0 +1,36 @@
+{
+  "name": "meme-generator-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that generates memes from text content using memegen.link",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "meme-generator-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "tsc && node dist/index.js",
+    "inspector": "tsc && npx @modelcontextprotocol/inspector node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "mcp",
+    "meme",
+    "memegen",
+    "model-context-protocol"
+  ],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.25.0",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.1",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  }
+}
