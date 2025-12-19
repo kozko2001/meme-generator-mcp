@@ -110,30 +110,93 @@ In Claude, you can say:
 > "Make me a meme about choosing GraphQL over REST"
 
 Claude will use the `generate_meme` tool with something like:
-- Template: `drake`
-- Top: "REST API"
-- Bottom: "GraphQL"
+```json
+{
+  "template": "drake",
+  "text_lines": ["REST API", "GraphQL"]
+}
+```
 
 And get back a meme image URL.
+
+#### Multi-Slot Templates
+
+Different templates support different numbers of text lines. Here are examples:
+
+**1-slot template (Change My Mind):**
+```json
+{
+  "template": "cmm",
+  "text_lines": ["Linux is superior"]
+}
+```
+
+**2-slot template (Drake):**
+```json
+{
+  "template": "drake",
+  "text_lines": ["REST API", "GraphQL"]
+}
+```
+
+**3-slot template (Distracted Boyfriend):**
+```json
+{
+  "template": "db",
+  "text_lines": ["Current framework", "Developer", "New shiny framework"]
+}
+```
+
+**4-slot template (Galaxy Brain):**
+```json
+{
+  "template": "gb",
+  "text_lines": ["var", "let", "const", "just use TypeScript"]
+}
+```
+
+**5-slot template (Anakin and Padme):**
+```json
+{
+  "template": "right",
+  "text_lines": [
+    "Senior Developer",
+    "Junior Developer",
+    "Put it in the backlog.",
+    "So we can fix it later, right?",
+    "So we can fix it later, right?"
+  ]
+}
+```
 
 ## Available Templates
 
 This MCP server includes **all 207 templates** from memegen.link! Here are some popular ones:
 
-| Template | ID | Use Case |
-|----------|-----|----------|
-| Drake Hotline Bling | `drake` | Rejecting one option for another |
-| Distracted Boyfriend | `db` | Being tempted by something new |
-| Change My Mind | `cmm` | Hot takes and controversial opinions |
-| Is This a Pigeon? | `pigeon` | Misidentifying something obvious |
-| X, X Everywhere | `buzz` | Something being everywhere |
-| Futurama Fry | `fry` | Being suspicious or unsure |
-| Success Kid | `success` | Celebrating small victories |
-| Doge | `doge` | Much wow, such meme |
-| This is Fine | `fine` | Everything is on fire but it's fine |
-| Woman Yelling at Cat | `woman-cat` | Two opposing viewpoints |
-| Spider-Man Pointing | `spiderman` | Two identical things |
-| Stonks | `stonks` | Financial decisions |
+| Template | ID | Slots | Use Case |
+|----------|-----|-------|----------|
+| Drake Hotline Bling | `drake` | 2 | Rejecting one option for another |
+| Distracted Boyfriend | `db` | 3 | Being tempted by something new |
+| Change My Mind | `cmm` | 1 | Hot takes and controversial opinions |
+| Galaxy Brain | `gb` | 4 | Ascending levels of intelligence |
+| Is This a Pigeon? | `pigeon` | 3 | Misidentifying something obvious |
+| X, X Everywhere | `buzz` | 2 | Something being everywhere |
+| Futurama Fry | `fry` | 2 | Being suspicious or unsure |
+| Success Kid | `success` | 2 | Celebrating small victories |
+| Doge | `doge` | 2 | Much wow, such meme |
+| This is Fine | `fine` | 2 | Everything is on fire but it's fine |
+| Woman Yelling at Cat | `woman-cat` | 2 | Two opposing viewpoints |
+| Spider-Man Pointing | `spiderman` | 2 | Two identical things |
+| Stonks | `stonks` | 2 | Financial decisions |
+
+**Slot Count Distribution:**
+- 1 slot: 6 templates
+- 2 slots: 165 templates (most common)
+- 3 slots: 21 templates
+- 4 slots: 6 templates
+- 5 slots: 4 templates
+- 6 slots: 3 templates
+- 8 slots: 2 templates
 
 **Browse all templates:** https://memegen.link/templates/
 

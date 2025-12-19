@@ -40,13 +40,8 @@ export function encodeMemeText(text: string): string {
 /**
  * Build a memegen.link image URL
  */
-export function buildMemeUrl(
-  template: string,
-  topText: string,
-  bottomText: string
-): string {
-  const encodedTop = encodeMemeText(topText);
-  const encodedBottom = encodeMemeText(bottomText);
+export function buildMemeUrl(template: string, textLines: string[]): string {
+  const encodedLines = textLines.map(encodeMemeText);
 
-  return `${MEMEGEN_BASE_URL}/${template}/${encodedTop}/${encodedBottom}.png`;
+  return `${MEMEGEN_BASE_URL}/${template}/${encodedLines.join('/')}.png`;
 }

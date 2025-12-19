@@ -55,7 +55,7 @@ function createServer() {
           content: [
             {
               type: 'text' as const,
-              text: `Meme generated successfully!\n\nURL: ${result.url}\n\nTemplate: ${validatedArgs.template}\nTop: "${validatedArgs.top_text}"\nBottom: "${validatedArgs.bottom_text}"`,
+              text: `Meme generated successfully!\n\nURL: ${result.url}\n\nTemplate: ${validatedArgs.template}\nText lines: ${JSON.stringify(validatedArgs.text_lines)}`,
             },
             {
               type: 'image' as const,
