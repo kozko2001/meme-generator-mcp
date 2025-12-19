@@ -130,19 +130,38 @@ function createServer() {
 
         case 'generate_meme': {
           const validatedArgs = GenerateMemeArgsSchema.parse(args);
-          const result = await handleGenerateMeme(validatedArgs);
+          const results = await handleGenerateMeme(validatedArgs);
+
+          const successCount = results.filter((r) => r.success).length;
+          const total = results.length;
+
+          // Build summary text
+          const summaryText =
+            total === 1 && results[0].success
+              ? `Meme generated successfully!\n\nURL: ${results[0].url}\n\nTemplate: ${results[0].template}`
+              : `Batch: ${successCount}/${total} memes generated\n\n` +
+                results
+                  .map((r, i) =>
+                    r.success
+                      ? `✓ ${i + 1}. ${r.template}: ${r.url}`
+                      : `✗ ${i + 1}. ${r.template}: ${r.error}`
+                  )
+                  .join('\n');
 
           return {
             content: [
               {
                 type: 'text' as const,
-                text: `Meme generated successfully!\n\nURL: ${result.url}\n\nTemplate: ${validatedArgs.template}\nText lines: ${JSON.stringify(validatedArgs.text_lines)}`,
+                text: summaryText,
               },
-              {
-                type: 'image' as const,
-                data: result.base64Image,
-                mimeType: 'image/png',
-              },
+              // Add all successful meme images
+              ...results
+                .filter((r) => r.success)
+                .map((r) => ({
+                  type: 'image' as const,
+                  data: r.base64Image!,
+                  mimeType: 'image/png' as const,
+                })),
             ],
           };
         }
