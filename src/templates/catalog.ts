@@ -1465,3 +1465,38 @@ export function getTemplateIds(): string[] {
 export function isValidTemplate(id: string): boolean {
   return id in templates;
 }
+
+// Enriched template interface with metadata
+export interface EnrichedTemplate extends MemeTemplate {
+  usage: string;
+  category: string;
+  keywords: string[];
+  similar?: string[];
+  popularity?: string;
+}
+
+// Get enriched template data (base template + metadata)
+export function getEnrichedTemplate(id: string): EnrichedTemplate | undefined {
+  const template = templates[id];
+  if (!template) return undefined;
+
+  // Dynamically import metadata to avoid circular dependencies
+  // The metadata module imports this catalog module for validation
+  const { templateMetadata } = require('./metadata.js');
+  const metadata = templateMetadata[id];
+
+  if (!metadata) {
+    // Return template with placeholder metadata if not found
+    return {
+      ...template,
+      usage: template.description,
+      category: 'meta',
+      keywords: [],
+    };
+  }
+
+  return {
+    ...template,
+    ...metadata,
+  };
+}

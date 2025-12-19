@@ -12,6 +12,26 @@ import {
   GenerateMemeArgsSchema,
   handleGenerateMeme,
 } from './tools/generate-meme.js';
+import {
+  browseCategoriesSchema,
+  browseCategoriesInputSchema,
+  browseCategories,
+} from './tools/browse-categories.js';
+import {
+  searchByCategorySchema,
+  searchByCategoryInputSchema,
+  searchByCategory,
+} from './tools/search-by-category.js';
+import {
+  searchByKeywordSchema,
+  searchByKeywordInputSchema,
+  searchTemplatesByKeyword,
+} from './tools/search-by-keyword.js';
+import {
+  getTemplateDetailsSchema,
+  getTemplateDetailsInputSchema,
+  getTemplateDetails,
+} from './tools/get-template-details.js';
 import http from 'http';
 import { URL } from 'url';
 
@@ -36,7 +56,13 @@ function createServer() {
    */
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
-      tools: [generateMemeTool],
+      tools: [
+        browseCategoriesSchema,
+        searchByCategorySchema,
+        searchByKeywordSchema,
+        getTemplateDetailsSchema,
+        generateMemeTool,
+      ],
     };
   });
 
@@ -46,41 +72,98 @@ function createServer() {
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
 
-    if (name === 'generate_meme') {
-      try {
-        const validatedArgs = GenerateMemeArgsSchema.parse(args);
-        const result = await handleGenerateMeme(validatedArgs);
-
-        return {
-          content: [
-            {
-              type: 'text' as const,
-              text: `Meme generated successfully!\n\nURL: ${result.url}\n\nTemplate: ${validatedArgs.template}\nText lines: ${JSON.stringify(validatedArgs.text_lines)}`,
-            },
-            {
-              type: 'image' as const,
-              data: result.base64Image,
-              mimeType: 'image/png',
-            },
-          ],
-        };
-      } catch (error) {
-        if (error instanceof Error) {
+    try {
+      switch (name) {
+        case 'browse_meme_categories': {
+          const result = browseCategories();
           return {
             content: [
               {
                 type: 'text' as const,
-                text: `Error generating meme: ${error.message}`,
+                text: JSON.stringify(result, null, 2),
               },
             ],
-            isError: true,
           };
         }
-        throw error;
-      }
-    }
 
-    throw new Error(`Unknown tool: ${name}`);
+        case 'search_templates_by_category': {
+          const validatedArgs = searchByCategoryInputSchema.parse(args);
+          const result = searchByCategory(validatedArgs.category);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+          };
+        }
+
+        case 'search_templates_by_keyword': {
+          const validatedArgs = searchByKeywordInputSchema.parse(args);
+          const result = searchTemplatesByKeyword(
+            validatedArgs.query,
+            validatedArgs.limit
+          );
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+          };
+        }
+
+        case 'get_template_details': {
+          const validatedArgs = getTemplateDetailsInputSchema.parse(args);
+          const result = getTemplateDetails(validatedArgs.template_ids);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+          };
+        }
+
+        case 'generate_meme': {
+          const validatedArgs = GenerateMemeArgsSchema.parse(args);
+          const result = await handleGenerateMeme(validatedArgs);
+
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: `Meme generated successfully!\n\nURL: ${result.url}\n\nTemplate: ${validatedArgs.template}\nText lines: ${JSON.stringify(validatedArgs.text_lines)}`,
+              },
+              {
+                type: 'image' as const,
+                data: result.base64Image,
+                mimeType: 'image/png',
+              },
+            ],
+          };
+        }
+
+        default:
+          throw new Error(`Unknown tool: ${name}`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: `Error: ${error.message}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+      throw error;
+    }
   });
 
   return server;
