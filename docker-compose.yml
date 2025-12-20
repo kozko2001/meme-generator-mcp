@@ -14,6 +14,8 @@ services:
       - PORT=3000
       - NODE_ENV=production
       - ALLOWED_ORIGINS=*
+      # Leave MEMEGEN_URL unset for local dev - uses public api.memegen.link
+      # - MEMEGEN_URL=http://memegen:5000/images
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
@@ -21,3 +23,19 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
+
+  # Uncomment this section to run a local memegen service
+  # memegen:
+  #   image: harbor.allocsoc.net/memegen/memegen:latest
+  #   container_name: memegen
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - DOMAIN=localhost
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+  #     interval: 30s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 10s

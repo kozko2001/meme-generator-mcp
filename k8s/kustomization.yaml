@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
 - namespace.yaml
 - meme-generator-mcp.yaml
+- memegen-service.yaml
 
 # Namespace for all resources
 namespace: meme-generator-mcp

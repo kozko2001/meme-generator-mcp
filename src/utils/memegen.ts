@@ -13,7 +13,17 @@
  * - "" (empty) → _
  */
 
-const MEMEGEN_BASE_URL = 'https://api.memegen.link/images';
+/**
+ * Get the memegen base URL from environment or use default
+ */
+function getMemegenBaseUrl(): string {
+  const customUrl = process.env.MEMEGEN_URL;
+  if (customUrl) {
+    // Remove trailing slash if present
+    return customUrl.replace(/\/$/, '');
+  }
+  return 'https://api.memegen.link/images';
+}
 
 /**
  * Encode text for memegen.link URL format
@@ -42,6 +52,7 @@ export function encodeMemeText(text: string): string {
  */
 export function buildMemeUrl(template: string, textLines: string[]): string {
   const encodedLines = textLines.map(encodeMemeText);
+  const baseUrl = getMemegenBaseUrl();
 
-  return `${MEMEGEN_BASE_URL}/${template}/${encodedLines.join('/')}.png`;
+  return `${baseUrl}/${template}/${encodedLines.join('/')}.png`;
 }
