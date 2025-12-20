@@ -6,13 +6,26 @@ This is an MCP (Model Context Protocol) server that generates memes from text co
 
 **Philosophy:** Memes are fast food for the brain. Template-based memes work because the format carries meaning — viewers instantly recognize the pattern. We're NOT doing AI image generation; we're matching content to classic meme templates.
 
-## Current Release Target
+## Current Release Status
 
-**Release 1: Walking Skeleton**
+**✅ Release 1: Walking Skeleton** - COMPLETE
 - End-to-end flow works
-- 5 hardcoded templates (drake, distracted-boyfriend, change-my-mind, pigeon, pikachu)
-- Single MCP tool: `generate_meme`
-- Returns memegen.link URL
+- MCP server with stdio and HTTP/SSE transports
+- Core `generate_meme` tool working
+- Returns memegen.link URL and image
+
+**✅ Release 2: Template Discovery** - COMPLETE
+- All 207 templates from memegen.link (not 5!)
+- 9 semantic categories
+- 4 discovery tools (browse, search by category/keyword, get details)
+- Multi-slot template support (1-8 slots)
+- Batch generation (1-10 memes in parallel)
+
+**✅ Release 3: Smart Content Processing** - COMPLETE
+- URL content fetcher (zero-cost)
+- Rule-based template suggester
+- Key quote extractor
+- All zero-cost (no external APIs)
 
 ## Tech Stack
 

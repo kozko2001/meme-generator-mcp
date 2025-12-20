@@ -32,6 +32,21 @@ import {
   getTemplateDetailsInputSchema,
   getTemplateDetails,
 } from './tools/get-template-details.js';
+import {
+  fetchContentSchema,
+  fetchContentInputSchema,
+  fetchUrlContent,
+} from './tools/fetch-content.js';
+import {
+  suggestTemplatesSchema,
+  suggestTemplatesInputSchema,
+  suggestTemplates,
+} from './tools/suggest-templates.js';
+import {
+  extractQuotesSchema,
+  extractQuotesInputSchema,
+  extractKeyQuotes,
+} from './tools/extract-quotes.js';
 import http from 'http';
 import { URL } from 'url';
 
@@ -62,6 +77,9 @@ function createServer() {
         searchByKeywordSchema,
         getTemplateDetailsSchema,
         generateMemeTool,
+        fetchContentSchema,
+        suggestTemplatesSchema,
+        extractQuotesSchema,
       ],
     };
   });
@@ -162,6 +180,45 @@ function createServer() {
                   data: r.base64Image!,
                   mimeType: 'image/png' as const,
                 })),
+            ],
+          };
+        }
+
+        case 'fetch_url_content': {
+          const validatedArgs = fetchContentInputSchema.parse(args);
+          const result = await fetchUrlContent(validatedArgs);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+          };
+        }
+
+        case 'suggest_templates': {
+          const validatedArgs = suggestTemplatesInputSchema.parse(args);
+          const result = suggestTemplates(validatedArgs);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+          };
+        }
+
+        case 'extract_key_quotes': {
+          const validatedArgs = extractQuotesInputSchema.parse(args);
+          const result = extractKeyQuotes(validatedArgs);
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: JSON.stringify(result, null, 2),
+              },
             ],
           };
         }

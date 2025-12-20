@@ -10,8 +10,13 @@ This MCP server lets Claude (or any MCP client) generate memes by choosing the r
 
 - **200+ Meme Templates**: All templates from memegen.link
 - **Smart Template Selection**: Claude picks the best template for your humor
+- **Template Discovery**: Browse by category, search by keyword, get detailed info
+- **NLP-Powered Analysis**: Uses compromise library for grammatical analysis
+- **Smart Content Processing**: Fetch URLs, extract quotes, auto-suggest templates
+- **Batch Generation**: Create multiple memes in parallel
 - **URL-based Generation**: Uses memegen.link API (no authentication needed)
 - **Type-safe**: Full TypeScript implementation with validation
+- **Low Cost**: Uses cheerio (HTML parsing) and compromise (NLP), no external AI APIs
 
 ## Installation
 
@@ -103,21 +108,94 @@ Add to your `claude_desktop_config.json`:
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 - Linux: `~/.config/Claude/claude_desktop_config.json`
 
+## Available Tools
+
+This MCP server provides **8 tools** for meme generation:
+
+### 1. Template Discovery Tools
+
+**`browse_meme_categories`** - Explore 9 semantic categories
+- Returns: List of categories (reactions, comparisons, social, etc.) with template counts
+
+**`search_templates_by_category`** - Get all templates in a category
+- Input: `category` (string)
+- Returns: Templates with usage descriptions and metadata
+
+**`search_templates_by_keyword`** - Search by concept or keyword
+- Input: `query` (string), `limit` (optional number)
+- Returns: Ranked template matches
+- Example: "surprised" → astronaut, scc, whatyear
+
+**`get_template_details`** - Deep dive on specific templates
+- Input: `template_ids` (array of strings)
+- Returns: Full metadata, similar templates, popularity
+
+### 2. Smart Content Processing Tools
+
+**`fetch_url_content`** - Download and extract text from URLs
+- Input: `url` (string)
+- Returns: Extracted plain text, word count, metadata
+- Zero cost: Uses Node.js built-in fetch + regex
+
+**`suggest_templates`** - Auto-recommend templates for content
+- Input: `content` (string), `limit` (optional number)
+- Returns: Template suggestions with confidence scores and linguistic reasoning
+- NLP-powered: Uses compromise for grammatical analysis (verb tenses, sentence structure)
+- Detects: Past/present tense contrasts, questions, negations, comparisons
+
+**`extract_key_quotes`** - Pull meme-worthy phrases from text
+- Input: `content` (string), `maxLength` (optional), `limit` (optional)
+- Returns: Scored quotes optimized for meme readability
+- NLP-powered: Uses compromise for part-of-speech tagging
+- Scores based on: Verbs, adjectives, proper nouns, grammatical patterns
+
+### 3. Meme Generation Tool
+
+**`generate_meme`** - Create one or more memes
+- Input: `memes` (array of {template, text_lines})
+- Returns: Meme images and URLs
+- Supports batch generation (1-10 memes in parallel)
+
 ### Example Usage
 
-In Claude, you can say:
+**Simple meme generation:**
 
 > "Make me a meme about choosing GraphQL over REST"
 
-Claude will use the `generate_meme` tool with something like:
+Claude will use the `generate_meme` tool:
 ```json
 {
-  "template": "drake",
-  "text_lines": ["REST API", "GraphQL"]
+  "memes": [{
+    "template": "drake",
+    "text_lines": ["REST API", "GraphQL"]
+  }]
 }
 ```
 
-And get back a meme image URL.
+**Smart content processing:**
+
+> "Make a meme from this article: https://example.com/ai-news"
+
+Claude's workflow:
+1. Calls `fetch_url_content` to download the article
+2. Calls `suggest_templates` to get template recommendations
+3. Calls `extract_key_quotes` to find punchlines
+4. Calls `generate_meme` with the best match
+
+**Multiple meme variations:**
+
+> "Create 3 different meme versions about procrastination"
+
+Claude will batch generate:
+```json
+{
+  "memes": [
+    {"template": "drake", "text_lines": ["Starting work on time", "Waiting until last minute"]},
+    {"template": "fine", "text_lines": ["Deadline tomorrow", "This is fine"]},
+    {"template": "fry", "text_lines": ["Not sure if productive", "Or just procrastinating efficiently"]}
+  ]
+}
+```
 
 #### Multi-Slot Templates
 
@@ -340,26 +418,38 @@ memegen.link uses a specific encoding scheme:
 - Literal `-` → `--`
 - Empty text → `_`
 
-## Release 1 Status
+## Current Status: Release 3 (Smart Content Processing)
 
-This is the "Walking Skeleton" release. Basic functionality works end-to-end.
+**Completed Features:**
 
-**Completed:**
+### Release 1: Walking Skeleton ✅
 - ✅ MCP server with stdio transport
 - ✅ MCP server with HTTP/SSE transport (for web access)
 - ✅ `generate_meme` tool
-- ✅ All 207 templates from memegen.link
 - ✅ URL generation and encoding
-- ✅ Tests for URL encoding
 - ✅ Type-safe implementation
 - ✅ Docker containerization
-- ✅ CORS support for web clients
 
-**Future Releases:**
-- Accept URLs and auto-extract content
-- Multi-panel meme support
-- Custom image uploads
+### Release 2: Template Discovery ✅
+- ✅ All 207 templates from memegen.link
+- ✅ 9 semantic categories (reactions, comparisons, social, etc.)
+- ✅ Template browsing and search tools
+- ✅ Keyword-based template discovery
+- ✅ Multi-slot template support (1-8 slots)
+- ✅ Batch meme generation (1-10 memes in parallel)
+
+### Release 3: Smart Content Processing ✅
+- ✅ URL content fetcher (zero-cost, built-in fetch)
+- ✅ Rule-based template suggester (keyword + pattern matching)
+- ✅ Key quote extractor (statistical analysis)
+- ✅ All features are zero-cost (no external APIs)
+
+**Future Ideas:**
+- Multi-panel complex layouts (alignment charts, political compass)
+- Custom image uploads via memegen.link custom URL feature
+- Meme history/favorites tracking (local storage)
 - Self-hosted memegen instance support
+- Advanced pattern detection (sarcasm, cultural references)
 
 ## License
 
